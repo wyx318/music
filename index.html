@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./music.css">
+    <link rel="stylesheet" href="http:////at.alicdn.com/t/font_990721_rxovd5zxnno.css">
+    <title>music</title>
+</head>
+<body>
+    <div class="cover"></div>
+    <div class="musicbox">
+        <div class="music-panel">
+            <div class="music clearflx">
+                <div class="control">
+                    <span class="back"><i class="iconfont icon-shangyiqu"></i></span>
+                    <span class="play"><i class="iconfont icon-play"></i></span>
+                    <span class="forward"><i class="iconfont icon-xiayiqu"></i></span>
+                </div>
+                <div class="info">
+                    <div class="title">my song</div>
+                    <div class="auther">laowang</div>
+                </div>
+            </div>
+           
+            <div class="progress">
+                <div class="bar">
+                  <div class="progress-total"></div>
+                  <div class="progress-now"></div>
+                </div>
+                <div class="time">0:00</div>
+              </div>
+        </div>
+        <!-- 列表 -->
+        <ul class="list">
+            <li>贰佰-玫瑰</li>
+        </ul>
+        <script>
+            var musicList = [];//歌曲数量
+           var currentIndex = 0 ;//歌曲初始
+           var audio = new Audio();
+           var clock ;
+           //自动播放
+           audio.autoplay = true ;
+           getMusicList(function(list){
+               musicList = list;
+                loadMusic(list[currentIndex]);
+            })
+            //设置滚动条
+            audio.ontimeupdate = function (){
+                console.log(this.currentTime);
+                $('.musicbox .progress-now').style.width = (this.currentTime/this.duration)*100 + '%';
+                // var min = Math.floor(this.currentTime/60);
+                // var sec = Math.floor(this.currentTime)%60 + '';
+                // sec = sec.length === 2 ? sec : '0' + sec ;
+                // $('.musicbox .time').innerText = min + ':'+ sec ;
+            }
+            // audio.onplay = function(){
+            //     clock = setInterval(function(){
+            //         //设置时间
+            //     var min = Math.floor(this.currentTime/60);
+            //     var sec = Math.floor(this.currentTime)%60 + '';
+            //     sec = sec.length === 2 ? sec : '0' + sec ;
+            //     $('.musicbox .time').innerText = min + ':'+ sec ;
+            //     }, 1000)
+            //     console.log(1);
+            // }
+            audio.onplay = function(){
+             clock = setInterval(function(){
+                 var min = Math.floor(audio.currentTime/60)
+                 var sec = Math.floor(audio.currentTime)%60 + ''
+                 sec = sec.length === 2? sec : '0' + sec
+                 $('.musicbox .time').innerText = min + ':' + sec
+            }, 1000)
+         }
+
+            audio.onpause = function(){
+                clearInterval(clock);
+            }
+            //当音乐播放完毕之后自动下一曲
+            audio.onended = function (){
+                currentIndex = (++currentIndex)%musicList.length;
+            //    console.log(currentIndex);
+                loadMusic(musicList[currentIndex]);
+            }
+            //点击事件
+            $('.musicbox .play').onclick = function (){
+                //先判断点击停按钮状态 音乐暂停就启动播放 音乐播放就启动暂停 同时 改变当前按钮的形状。
+                if(audio.paused){
+                    audio.play();
+                    this.querySelector('.iconfont').classList.remove('icon-bofang');
+                    this.querySelector('.iconfont').classList.add('icon-play');
+                }else{
+                    audio.pause();
+                    this.querySelector('.iconfont').classList.remove('icon-play');
+                    this.querySelector('.iconfont').classList.add('icon-bofang');
+                }  
+            }
+            //上一曲 下一曲 点击事件  比较巧妙 
+            $('.musicbox .forward').onclick = function (){
+               currentIndex = (++currentIndex)%musicList.length;
+            //    console.log(currentIndex);
+                loadMusic(musicList[currentIndex]);
+                
+            }
+            //下一曲 事件 
+            $('.musicbox .back').onclick = function (){
+               currentIndex = (musicList.length+ --currentIndex)%musicList.length;
+            //    console.log(currentIndex);
+                loadMusic(musicList[currentIndex]);
+                
+            }
+            //导航条事件
+            $('.musicbox .bar').onclick = function(e){
+                console.log(e);
+                var percent = e.offsetX / parseInt(getComputedStyle(this).width);
+                console.log(percent);
+                audio.currentTime = audio.duration  * percent ;
+            }
+                //请求数据 用一个函数接住 用的时候就调用这个函数 
+               function getMusicList(callback){
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET','/music.json',true);
+                    xhr.onload = function (){
+                        if((xhr.status >=200 && xhr.status < 300) || xhr.status ===304){
+                           callback(JSON.parse(this.responseText));
+                        }else{
+                            console.log('SB出错了');
+                        }
+                        }
+                        xhr.onerror = function (){
+                            console.log('网络异常');
+                        }   
+                        xhr.send();
+               }
+
+               function loadMusic(musicObj){
+                   console.log('begin play',musicObj);
+                   
+                //    console.log(audio.src);
+                   $('.musicbox .title').innerText = musicObj.title ;
+                   $('.musicbox .auther').innerText = musicObj.auther ;
+                   //背景图片
+                   $('.cover').style.backgroundImage = 'url(' + musicObj.img + ')'; 
+                   //JSON 数据中的音乐地址。
+                   audio.src = musicObj.src;
+               }
+               //方便DOM操作
+              function $(selector){
+                  return document.querySelector(selector);
+              }
+        </script>
+    </div>
+</body>
+</html>
