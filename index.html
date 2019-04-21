@@ -118,6 +118,19 @@
                 console.log(percent);
                 audio.currentTime = audio.duration  * percent ;
             }
+            // //代替ajax 因为在GitHub上面请求不成功
+            // var musicList = [
+            //             {
+            //             src: 'http://cloud.hunger-valley.com/music/玫瑰.mp3',
+            //             title: '玫瑰',
+            //             auther: '贰佰',
+            //             img: "http://cloud.hunger-valley.com/17-9-22/28212907.jpg"
+            //             },{
+            //             src: 'http://cloud.hunger-valley.com/music/ifyou.mp3',
+            //             title: 'IF YOU',
+            //             auther: 'Big Bang',
+            //             img: "http://cloud.hunger-valley.com/17-9-22/87786461.jpg"
+            //         }]
                 //请求数据 用一个函数接住 用的时候就调用这个函数 
                function getMusicList(callback){
                     var xhr = new XMLHttpRequest();
@@ -126,7 +139,7 @@
                         if((xhr.status >=200 && xhr.status < 300) || xhr.status ===304){
                            callback(JSON.parse(this.responseText));
                         }else{
-                            console.log('SB出错了');
+                            console.log('出错了');
                         }
                         }
                         xhr.onerror = function (){
