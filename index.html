@@ -134,6 +134,7 @@
                // 请求数据 用一个函数接住 用的时候就调用这个函数 
                function getMusicList(callback){
                     var xhr = new XMLHttpRequest();
+                       xhr.withCredentials = true
                     xhr.open('GET','/music.json',true);
                     xhr.onload = function (){
                         if((xhr.status >=200 && xhr.status < 300) || xhr.status ===304){
