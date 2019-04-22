@@ -116,7 +116,7 @@
                 console.log(e);
                 var percent = e.offsetX / parseInt(getComputedStyle(this).width);
                 console.log(percent);
-                audio.currentTime = audio.duration  * percent ;
+                audio.currentTime = audio.duration  * percent;
             }
             //代替ajax 因为在GitHub上面请求不成功
             // var musicList = [
@@ -152,8 +152,8 @@
                    console.log('begin play',musicObj);
                    
                 //    console.log(audio.src);
-                   $('.musicbox .title').innerText = musicObj.title ;
-                   $('.musicbox .auther').innerText = musicObj.auther ;
+                   $('.musicbox .title').innerText = musicObj.title;
+                   $('.musicbox .auther').innerText = musicObj.auther;
                    //背景图片
                    $('.cover').style.backgroundImage = 'url(' + musicObj.img + ')'; 
                    //JSON 数据中的音乐地址。
